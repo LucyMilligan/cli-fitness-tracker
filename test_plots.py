@@ -1,4 +1,8 @@
-from plots import calculate_speed_mins_per_km, calculate_time_secs, convert_speed_to_float, format_query_output, select_activity_data
+from plots import calculate_pace_mins_per_km, calculate_time_secs, convert_pace_to_float, create_dataframe, format_query_output, select_activity_data
+import pandas as pd
+
+#visual test for plots done manually at the moment
+#note - currently happy path testing
 
 class TestCalculateTimeSecs:
     def test_calculate_time_secs_just_secs(self):
@@ -20,33 +24,33 @@ class TestCalculateTimeSecs:
         assert result == expected
 
 
-class TestCalculateSpeed:
-    def test_calculate_speed_min_per_km_30_mins(self):
+class TestCalculatePace:
+    def test_calculate_pace_min_per_km_30_mins(self):
         moving_time = "00:30:00"
         distance = 5.0
         expected = "6:00"
-        result = calculate_speed_mins_per_km(distance, moving_time)
+        result = calculate_pace_mins_per_km(distance, moving_time)
         assert result == expected
 
-    def test_calculate_speed_min_per_km_33_mins(self):
+    def test_calculate_pace_min_per_km_33_mins(self):
         moving_time = "00:33:00"
         distance = 5.0
         expected = "6:36"
-        result = calculate_speed_mins_per_km(distance, moving_time)
+        result = calculate_pace_mins_per_km(distance, moving_time)
         assert result == expected
     
-    def test_calculate_speed_min_per_km_greater_than_10_mins_per_km(self):
+    def test_calculate_pace_min_per_km_greater_than_10_mins_per_km(self):
         moving_time = "02:15:30"
         distance = 5.0
         expected = "27:06"
-        result = calculate_speed_mins_per_km(distance, moving_time)
+        result = calculate_pace_mins_per_km(distance, moving_time)
         assert result == expected
 
 
-class TestConvertSpeedToFloat:
-    def test_convert_speed_to_float(self):
-        speed_string = "6:53"
-        result = convert_speed_to_float(speed_string)
+class TestConvertPaceToFloat:
+    def test_convert_pace_to_float(self):
+        pace_string = "6:53"
+        result = convert_pace_to_float(pace_string)
         assert result == 6.88
 
 
@@ -87,3 +91,29 @@ class TestSelectActivityData:
         assert result[0]['distance_km'] == 5.59
         assert result[0]['moving_time'] == '00:38:57'
         assert result[0]['date'] == '2025/02/10'
+
+
+class TestCreateDataframe:
+    def test_create_dataframe_creates_a_dataframe(self):
+        data = [{"date": "2025/02/25", "distance_km": 5.0, "moving_time":"00:30:00"}, 
+                {"date": "2025/02/24", "distance_km": 1.0, "moving_time":"00:07:00"}]
+        expected_df = pd.DataFrame({"date": ["2025/02/25", "2025/02/24"],
+                                   "distance_km": [5.0, 1.0],
+                                   "moving_time": ["00:30:00", "00:07:00"],
+                                   "pace": ["6:00", "7:00"],
+                                   "pace_numeric": [6.00, 7.00]})
+        expected_df["date"] = pd.to_datetime(expected_df["date"], format="%Y/%m/%d")
+        result = create_dataframe(data)
+        pd.testing.assert_frame_equal(expected_df, result)
+
+    def test_create_dataframe_dates_incorrect_format(self):
+        data = [{"date": "2025-02-25", "distance_km": 5.0, "moving_time":"00:30:00"}, 
+                {"date": "March 25th 25", "distance_km": 1.0, "moving_time":"00:07:00"}]
+        expected_df = pd.DataFrame({"date": ["NaT", "NaT"],
+                                   "distance_km": [5.0, 1.0],
+                                   "moving_time": ["00:30:00", "00:07:00"],
+                                   "pace": ["6:00", "7:00"],
+                                   "pace_numeric": [6.00, 7.00]})
+        expected_df["date"] = pd.to_datetime(expected_df["date"], format="%Y/%m/%d")
+        result = create_dataframe(data)
+        pd.testing.assert_frame_equal(expected_df, result)

@@ -30,3 +30,6 @@ To test the requests, use the browser and localhost:<port: int>/docs
 Prior to seeding the database, the above two steps (create database and run application) must be executed. These create the database and tables needed to add data to the database.
 
 ```python seed_db.py```
+
+### To plot data
+
