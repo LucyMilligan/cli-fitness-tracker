@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, select
 import os
 from dotenv import load_dotenv
 from sqlmodel import Session
-from main import engine, SessionDep
+from routes import engine, SessionDep
 from models import Activity
 from datetime import datetime, timedelta
 import pandas as pd
