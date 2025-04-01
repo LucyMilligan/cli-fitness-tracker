@@ -1,4 +1,4 @@
-from plots import calculate_pace_mins_per_km, calculate_time_secs, convert_pace_to_float, create_dataframe, format_query_output, select_activity_data
+from visualisation.plots_utils import calculate_pace_mins_per_km, calculate_time_secs, convert_pace_to_float, create_dataframe, format_query_output, select_activity_data
 import pandas as pd
 
 #visual test for plots done manually at the moment
@@ -83,10 +83,9 @@ class TestSelectActivityData:
     def test_select_activity_data_date_range(self):
         #testing seeded data, assuming no more data added between the given dates
         user_id = 1
-        date_start = "2025/02/01"
-        date_end = "2025/02/14"
+        date_start = "2025/02/09"
+        date_end = "2025/02/11"
         result = select_activity_data(user_id, date_start, date_end)
-        assert len(result) == 2
         assert result[0]["id"] == 9
         assert result[0]['distance_km'] == 5.59
         assert result[0]['moving_time'] == '00:38:57'

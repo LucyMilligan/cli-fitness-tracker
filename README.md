@@ -3,11 +3,17 @@ A simple API and command line interface application to visualise activity data (
 
 The aim of this mini project was to practice interacting with a database and creating graphical visualisations in python (using SQLAlchemy, Pandas, Matplotlib and Numpy). Testing of the API has therefore not been undertaken here, but can be found in my basic-postgres-fastapi repository.
 
+## Prerequisites
+
+Postgres - this can be downloaded from https://www.postgresql.org/download/
+
 ## Setup
 
 Clone the repo:
 
 ```git clone https://github.com/LucyMilligan/basic-data-visualisation.git```
+
+Unless explicitly stated, run the following commands in the root of the directory to setup the project. 
 
 Create a virtual environment and install the requirements:
 
@@ -15,15 +21,15 @@ Create a virtual environment and install the requirements:
 
 Create a .env file in the root of the directory, with the following content, updating the username and password with your postgress username and password:
 
-```DB_URL="postgresql://<username>:<password>@localhost:5432/fitness_tracker_test_db"```
+```DB_URL="postgresql://<username>:<password>@localhost:5432/cli_fitness_tracker"```
 
-Create the database by running the following in the terminal:
+Create the database:
 
-```psql -f create.sql```
+```psql -f database/create.sql```
 
 Run the API:
 
-```uvicorn main:app --reload --port <port: int>```
+```uvicorn routes:app --reload --port <port: int>```
 
 Seed the database: 
 
@@ -42,9 +48,15 @@ Note: Perceived effort should be between 1 (very easy) and 10 (very hard).
 
 ## Data visualisation application
 
-To run the command line interface interactive activity plotter to visualise the data (e.g. pace vs date), type the following into the terminal while in the root of the directory:
+To run the command line interface interactive activity plotter to visualise the data (e.g. pace vs date), enter the following into the terminal:
 
-```python script.py```
+```python main.py```
+
+## Run tests
+
+To run the unit tests:
+
+```pytest -vvvrP```
 
 ## Further Improvements
 

@@ -1,0 +1,1 @@
+CREATE DATABASE cli_fitness_tracker

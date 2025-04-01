@@ -1,1 +1,0 @@
-CREATE DATABASE fitness_tracker_test_db
