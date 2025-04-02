@@ -11,7 +11,7 @@ Postgres - this can be downloaded from https://www.postgresql.org/download/
 
 Clone the repo:
 
-```git clone [https://github.com/LucyMilligan/basic-data-visualisation.git](https://github.com/LucyMilligan/cli-fitness-tracker.git)```
+```git clone https://github.com/LucyMilligan/cli-fitness-tracker.git```
 
 Unless explicitly stated, run the following commands in the root of the directory to setup the project. 
 
