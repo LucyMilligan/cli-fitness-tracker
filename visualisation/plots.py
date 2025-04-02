@@ -90,13 +90,14 @@ def plot_pace_vs_perceived_effort(
     plt.ylabel("Pace (min/km)")
     plt.title("Pace vs Perceived Effort")
     plt.gca().invert_yaxis()  # slower paces at the bottom
+    plt.gca().set_xlim([0, 10])
     plt.grid(True)
     plt.tight_layout()
 
     # add a trendline (assuming linear trend)
-    # z = np.polyfit(df["perceived_effort"], df["pace_numeric"], 1)
-    # p = np.poly1d(z)
-    # plt.plot(df["perceived_effort"], p(df["perceived_effort"]), color="orangered", ls="-")
+    z = np.polyfit(df["perceived_effort"], df["pace_numeric"], 1)
+    p = np.poly1d(z)
+    plt.plot(df["perceived_effort"], p(df["perceived_effort"]), color="orangered", ls="-")
 
     plt.show()
 

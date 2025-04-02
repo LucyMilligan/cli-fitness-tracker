@@ -44,6 +44,7 @@ def plot_activity_input():
     include plotting certain graphs or exiting the application. Returned value is a
     single letter string (e.g. "a").
     """
+    print()
     print("Available plots and actions:")
     print(" [a] Plot Pace vs Date ")
     print(" [b] Plot Pace vs Distance ")
