@@ -43,12 +43,9 @@ User and activity data can be entered, retrieved, modified and deleted via the A
 
 ```uvicorn routes:app --reload --port <port: int>```
 
-Note: Dates must be entered in "YYYY/MM/DD" format.
-Note: Perceived effort should be between 1 (very easy) and 10 (very hard).
-
 ## Data visualisation application
 
-To run the command line interface interactive activity plotter to visualise the data (e.g. pace vs date), enter the following into the terminal:
+To graphically visualise data (e.g. pace vs date), run the main.py file and follow the CLI prompts.
 
 ```python main.py```
 
@@ -61,7 +58,7 @@ To run the unit tests:
 ## Further Improvements
 
 Improvements to the application could be:
+- add additional graphs
 - give users options to add trendlines to graphs
-- add additional error handling to functions (and test)
-- highlight the format that input data is required in (e.g. dates, perceived effort)
+- enforce data entry in certain formats (e.g. date, time, perceived effort)
 - accept and process other activities such as cycling
