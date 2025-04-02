@@ -1,9 +1,17 @@
-from visualisation.plots_utils import calculate_pace_mins_per_km, calculate_time_secs, convert_pace_to_float, create_dataframe, format_query_output, select_activity_data
+from visualisation.plots_utils import (
+    calculate_pace_mins_per_km,
+    calculate_time_secs,
+    convert_pace_to_float,
+    create_dataframe,
+    format_query_output,
+    select_activity_data,
+)
 import pandas as pd
 import pytest
 
-#visual test for plots done manually
-#note - currently happy path testing
+# visual test for plots done manually
+# note - currently happy path testing
+
 
 class TestCalculateTimeSecs:
     def test_calculate_time_secs_just_secs(self):
@@ -39,7 +47,7 @@ class TestCalculatePace:
         expected = "6:36"
         result = calculate_pace_mins_per_km(distance, moving_time)
         assert result == expected
-    
+
     def test_calculate_pace_min_per_km_greater_than_10_mins_per_km(self):
         moving_time = "02:15:30"
         distance = 5.0
@@ -66,7 +74,10 @@ class TestFormatQueryOutput:
         data = [("test1", "test2"), ("test3", "test4")]
         col_names = ["col1", "col2"]
         result = format_query_output(data, col_names)
-        assert result == [{"col1": "test1", "col2": "test2"}, {"col1": "test3", "col2": "test4"}]
+        assert result == [
+            {"col1": "test1", "col2": "test2"},
+            {"col1": "test3", "col2": "test4"},
+        ]
 
 
 class TestSelectActivityData:
@@ -83,18 +94,18 @@ class TestSelectActivityData:
             assert item["user_id"] == 1
 
     def test_select_activity_data_date_range(self):
-        #testing seeded data, assuming no more data added between the given dates
+        # testing seeded data, assuming no more data added between the given dates
         user_id = 1
         date_start = "2025/02/09"
         date_end = "2025/02/11"
         result = select_activity_data(user_id, date_start, date_end)
         assert result[0]["id"] == 9
-        assert result[0]['distance_km'] == 5.59
-        assert result[0]['moving_time'] == '00:38:57'
-        assert result[0]['date'] == '2025/02/10'
+        assert result[0]["distance_km"] == 5.59
+        assert result[0]["moving_time"] == "00:38:57"
+        assert result[0]["date"] == "2025/02/10"
 
     def test_select_activity_data_filers_by_user_and_date_range(self):
-        #testing seeded data, assuming no more data added between the given dates
+        # testing seeded data, assuming no more data added between the given dates
         user_id = 2
         date_start = "2025/02/09"
         date_end = "2025/02/11"
@@ -104,25 +115,37 @@ class TestSelectActivityData:
 
 class TestCreateDataframe:
     def test_create_dataframe_creates_a_dataframe(self):
-        data = [{"date": "2025/02/25", "distance_km": 5.0, "moving_time":"00:30:00"}, 
-                {"date": "2025/02/24", "distance_km": 1.0, "moving_time":"00:07:00"}]
-        expected_df = pd.DataFrame({"date": ["2025/02/25", "2025/02/24"],
-                                   "distance_km": [5.0, 1.0],
-                                   "moving_time": ["00:30:00", "00:07:00"],
-                                   "pace": ["6:00", "7:00"],
-                                   "pace_numeric": [6.00, 7.00]})
+        data = [
+            {"date": "2025/02/25", "distance_km": 5.0, "moving_time": "00:30:00"},
+            {"date": "2025/02/24", "distance_km": 1.0, "moving_time": "00:07:00"},
+        ]
+        expected_df = pd.DataFrame(
+            {
+                "date": ["2025/02/25", "2025/02/24"],
+                "distance_km": [5.0, 1.0],
+                "moving_time": ["00:30:00", "00:07:00"],
+                "pace": ["6:00", "7:00"],
+                "pace_numeric": [6.00, 7.00],
+            }
+        )
         expected_df["date"] = pd.to_datetime(expected_df["date"], format="%Y/%m/%d")
         result = create_dataframe(data)
         pd.testing.assert_frame_equal(expected_df, result)
 
     def test_create_dataframe_dates_incorrect_format(self):
-        data = [{"date": "2025-02-25", "distance_km": 5.0, "moving_time":"00:30:00"}, 
-                {"date": "March 25th 25", "distance_km": 1.0, "moving_time":"00:07:00"}]
-        expected_df = pd.DataFrame({"date": ["NaT", "NaT"],
-                                   "distance_km": [5.0, 1.0],
-                                   "moving_time": ["00:30:00", "00:07:00"],
-                                   "pace": ["6:00", "7:00"],
-                                   "pace_numeric": [6.00, 7.00]})
+        data = [
+            {"date": "2025-02-25", "distance_km": 5.0, "moving_time": "00:30:00"},
+            {"date": "March 25th 25", "distance_km": 1.0, "moving_time": "00:07:00"},
+        ]
+        expected_df = pd.DataFrame(
+            {
+                "date": ["NaT", "NaT"],
+                "distance_km": [5.0, 1.0],
+                "moving_time": ["00:30:00", "00:07:00"],
+                "pace": ["6:00", "7:00"],
+                "pace_numeric": [6.00, 7.00],
+            }
+        )
         expected_df["date"] = pd.to_datetime(expected_df["date"], format="%Y/%m/%d")
         result = create_dataframe(data)
         pd.testing.assert_frame_equal(expected_df, result)

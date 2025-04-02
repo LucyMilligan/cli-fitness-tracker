@@ -42,7 +42,7 @@ def convert_pace_to_float(pace_string: str):
 
 def format_query_output(data, col_names):
     """formats query output results into a dictionary.
-    
+
     :param data: list of tuples containing the data, with each tuple representing a row
     :param col_names: list of columns names relating to the data
     :returns: a list of dictionaries containing the data in the format
@@ -54,22 +54,27 @@ def format_query_output(data, col_names):
     return formatted_data
 
 
-def select_activity_data(user_id: int, start_date: str = "1981/01/01", end_date: str = "2081/01/01"):
+def select_activity_data(
+    user_id: int, start_date: str = "1981/01/01", end_date: str = "2081/01/01"
+):
     """queries the database and returns a list of dictionaries containing the query results.
-    
+
     :param user_id: user id integer
     :param start_date: earliest data for which activity data should be obtained.
     This should be in a string of format "YYYY/MM/DD".
     :param end_date: latest data for which activity data should be obtained.
     This should be in a string of format "YYYY/MM/DD".
-    :returns: a list of dictionaries containing the activity data, with each dictionary representing 
+    :returns: a list of dictionaries containing the activity data, with each dictionary representing
     a row of data, keys representing the column name and values representing the data.
     """
     with Session(engine) as session:
-        #explicitly unpacking all columns in the Activiy table (to give a list of tuples
-        #instead of ORM objects)
+        # explicitly unpacking all columns in the Activiy table (to give a list of tuples
+        # instead of ORM objects)
         stmt = select(*Activity.__table__.c).where(
-                    Activity.date > start_date, Activity.date < end_date, Activity.user_id == user_id)
+            Activity.date > start_date,
+            Activity.date < end_date,
+            Activity.user_id == user_id,
+        )
         activities = session.exec(stmt)
         activities_data = activities.all()
         activities_col_names = activities.keys()
@@ -80,12 +85,12 @@ def select_activity_data(user_id: int, start_date: str = "1981/01/01", end_date:
 
 def create_dataframe(data: list):
     """creates a pandas dataframe from given activity data. It converts the date strings
-    into datetime format, adds a pace column (string in format "MM:SS", min/km) and adds a 
+    into datetime format, adds a pace column (string in format "MM:SS", min/km) and adds a
     pace_numeric column (float, min/km).
-    
-    :param data: a list of dictionaries containing data, with each dictionary representing 
+
+    :param data: a list of dictionaries containing data, with each dictionary representing
     a row of data, keys representing the column name and values representing the data.
-    :returns: a pandas dataframe representing the data, with the addition of pace and 
+    :returns: a pandas dataframe representing the data, with the addition of pace and
     pace_numeric columns. If a date is not parsed in the format "YYYY/MM/DD", NaT (Not a Time)
     is set as the date value.
     :raises: raises a KeyError if there is no data available to create the dataframe (e.g. data = [])
@@ -93,7 +98,10 @@ def create_dataframe(data: list):
     try:
         df = pd.DataFrame(data)
         df["date"] = pd.to_datetime(df["date"], format="%Y/%m/%d", errors="coerce")
-        df["pace"] = df.apply(lambda x: calculate_pace_mins_per_km(x["distance_km"], x["moving_time"]), axis=1)
+        df["pace"] = df.apply(
+            lambda x: calculate_pace_mins_per_km(x["distance_km"], x["moving_time"]),
+            axis=1,
+        )
         df["pace_numeric"] = df["pace"].apply(convert_pace_to_float)
         type(df)
         return df

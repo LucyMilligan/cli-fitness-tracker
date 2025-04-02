@@ -1,10 +1,19 @@
 from fastapi import FastAPI, HTTPException
 from sqlmodel import select
 
-from database.models import Activity, ActivityCreate, ActivityUpdate, User, UserCreate, UserPublic, UserUpdate
+from database.models import (
+    Activity,
+    ActivityCreate,
+    ActivityUpdate,
+    User,
+    UserCreate,
+    UserPublic,
+    UserUpdate,
+)
 from database.database import create_db_and_tables, SessionDep
 
 app = FastAPI()
+
 
 @app.on_event("startup")
 def on_startup():
@@ -12,7 +21,7 @@ def on_startup():
     create_db_and_tables()
 
 
-#note: can use the same sqlmodel as a pydantic model
+# note: can use the same sqlmodel as a pydantic model
 @app.post("/users/", response_model=User)
 def create_user(user: UserCreate, session: SessionDep):
     """Endpoint that allows a user to create a user. The user request body
@@ -32,7 +41,7 @@ def create_user(user: UserCreate, session: SessionDep):
 def create_activity(activity: ActivityCreate, session: SessionDep):
     """Endpoint that allows a user to create an activity. The activity request body
     should be in the format:
-    
+
         user_id: int (e.g. 1)
         date: str, in the format "YYYY/MM/DD" (e.g. "2025/02/24")
         time: str, in the format "hh:mm" (e.g. "17:45")
@@ -58,7 +67,9 @@ def get_users(session: SessionDep, offset: int = 0, limit: int = 10):
 
 
 @app.get("/activities/")
-def get_activities(session: SessionDep, offset: int = 0, limit: int = 10) -> list[Activity]:
+def get_activities(
+    session: SessionDep, offset: int = 0, limit: int = 10
+) -> list[Activity]:
     """Endpoint to get a paginated list of activities."""
     activities = session.exec(select(Activity).offset(offset).limit(limit)).all()
     return activities
@@ -94,7 +105,9 @@ def update_user(user_id: int, user: UserUpdate, session: SessionDep):
     user_db = session.get(User, user_id)
     if not user_db:
         raise HTTPException(status_code=404, detail="User not found")
-    user_data = user.model_dump(exclude_unset=True) #only includes values sent by the client
+    user_data = user.model_dump(
+        exclude_unset=True
+    )  # only includes values sent by the client
     user_db.sqlmodel_update(user_data)
     session.add(user_db)
     session.commit()
@@ -109,7 +122,7 @@ def update_activity(id: int, activity: ActivityUpdate, session: SessionDep):
     original values remain.
 
     If the ID does not exist, an exception with 404 status code is raised.
-    """  
+    """
     activity_db = session.get(Activity, id)
     if not activity_db:
         raise HTTPException(status_code=404, detail="Activity not found")
@@ -143,4 +156,3 @@ def delete_activity(id: int, session: SessionDep):
     session.delete(activity)
     session.commit()
     return {"message": f"Activity id {id} deleted"}
-

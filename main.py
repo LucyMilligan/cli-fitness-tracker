@@ -1,18 +1,31 @@
-from visualisation.plots import plot_distance_vs_time_weekly, plot_pace_vs_date, plot_pace_vs_distance, plot_pace_vs_elevation, plot_pace_vs_perceived_effort
-from visualisation.utils import get_dates, get_user_id, is_valid_date, plot_activity_input, plot_all_activity_data, exit
+from visualisation.plots import (
+    plot_distance_vs_time_weekly,
+    plot_pace_vs_date,
+    plot_pace_vs_distance,
+    plot_pace_vs_elevation,
+    plot_pace_vs_perceived_effort,
+)
+from visualisation.utils import (
+    get_dates,
+    get_user_id,
+    is_valid_date,
+    plot_activity_input,
+    plot_all_activity_data,
+    exit,
+)
 
 
 def activity_plotter():
     """main script for running the activity plotter - it retrieves the
     user_id and dates between which to plot the data, validates the inputs are
     in the correct format, then plots the appropriate graph based on the user
-    input. 
-    
+    input.
+
     If there is no data available to plot, a message is printed stating this."""
-    
+
     print("Hi, welcome to activity plotter!")
-    
-    #retrieve valid user_id
+
+    # retrieve valid user_id
     user_id = get_user_id()
     while not user_id.isnumeric():
         print()
@@ -20,7 +33,7 @@ def activity_plotter():
         print()
         user_id = get_user_id()
 
-    #does the user want to plot all data or specify dates?
+    # does the user want to plot all data or specify dates?
     plot_all_data = plot_all_activity_data()
     while plot_all_data == "Invalid input":
         print()
@@ -28,7 +41,7 @@ def activity_plotter():
         print()
         plot_all_data = plot_all_activity_data()
 
-    #retrieve valid dates between which to plot data
+    # retrieve valid dates between which to plot data
     if plot_all_data:
         start_date = "1981/01/01"
         end_date = "2081/01/01"
@@ -40,16 +53,16 @@ def activity_plotter():
             print()
             start_date, end_date = get_dates()
 
-    #loop continually runs until "x" (exit) selected
+    # loop continually runs until "x" (exit) selected
     while True:
-        #retrieve valid option for graph to plot
+        # retrieve valid option for graph to plot
         activity_input = plot_activity_input()
         while activity_input not in ["a", "b", "c", "d", "e", "x"]:
             print()
             print("Invalid input.")
             print()
             activity_input = plot_activity_input()
-        #graph plotted based on option selected. Or exits application ("x").
+        # graph plotted based on option selected. Or exits application ("x").
         try:
             if activity_input == "x":
                 exit()
@@ -65,7 +78,9 @@ def activity_plotter():
                 plot_distance_vs_time_weekly(user_id, start_date, end_date)
         except KeyError as e:
             print()
-            print(f"No data available for user_id {user_id} between the dates specified.")
+            print(
+                f"No data available for user_id {user_id} between the dates specified."
+            )
             print()
 
 
