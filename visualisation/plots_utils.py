@@ -69,7 +69,7 @@ def select_activity_data(user_id: int, start_date: str = "1981/01/01", end_date:
         #explicitly unpacking all columns in the Activiy table (to give a list of tuples
         #instead of ORM objects)
         stmt = select(*Activity.__table__.c).where(
-                    Activity.date > start_date, Activity.date < end_date)
+                    Activity.date > start_date, Activity.date < end_date, Activity.user_id == user_id)
         activities = session.exec(stmt)
         activities_data = activities.all()
         activities_col_names = activities.keys()
@@ -88,10 +88,14 @@ def create_dataframe(data: list):
     :returns: a pandas dataframe representing the data, with the addition of pace and 
     pace_numeric columns. If a date is not parsed in the format "YYYY/MM/DD", NaT (Not a Time)
     is set as the date value.
+    :raises: raises a KeyError if there is no data available to create the dataframe (e.g. data = [])
     """
-    df = pd.DataFrame(data)
-    df["date"] = pd.to_datetime(df["date"], format="%Y/%m/%d", errors="coerce")
-    df["pace"] = df.apply(lambda x: calculate_pace_mins_per_km(x["distance_km"], x["moving_time"]), axis=1)
-    df["pace_numeric"] = df["pace"].apply(convert_pace_to_float)
-    type(df)
-    return df
+    try:
+        df = pd.DataFrame(data)
+        df["date"] = pd.to_datetime(df["date"], format="%Y/%m/%d", errors="coerce")
+        df["pace"] = df.apply(lambda x: calculate_pace_mins_per_km(x["distance_km"], x["moving_time"]), axis=1)
+        df["pace_numeric"] = df["pace"].apply(convert_pace_to_float)
+        type(df)
+        return df
+    except KeyError as e:
+        raise

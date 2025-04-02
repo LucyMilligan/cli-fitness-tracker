@@ -1,7 +1,8 @@
 from visualisation.plots_utils import calculate_pace_mins_per_km, calculate_time_secs, convert_pace_to_float, create_dataframe, format_query_output, select_activity_data
 import pandas as pd
+import pytest
 
-#visual test for plots done manually at the moment
+#visual test for plots done manually
 #note - currently happy path testing
 
 class TestCalculateTimeSecs:
@@ -79,6 +80,7 @@ class TestSelectActivityData:
             assert isinstance(item["id"], int)
             assert isinstance(item["distance_km"], float)
             assert isinstance(item["moving_time"], str)
+            assert item["user_id"] == 1
 
     def test_select_activity_data_date_range(self):
         #testing seeded data, assuming no more data added between the given dates
@@ -90,6 +92,14 @@ class TestSelectActivityData:
         assert result[0]['distance_km'] == 5.59
         assert result[0]['moving_time'] == '00:38:57'
         assert result[0]['date'] == '2025/02/10'
+
+    def test_select_activity_data_filers_by_user_and_date_range(self):
+        #testing seeded data, assuming no more data added between the given dates
+        user_id = 2
+        date_start = "2025/02/09"
+        date_end = "2025/02/11"
+        result = select_activity_data(user_id, date_start, date_end)
+        assert result == []
 
 
 class TestCreateDataframe:
@@ -116,3 +126,8 @@ class TestCreateDataframe:
         expected_df["date"] = pd.to_datetime(expected_df["date"], format="%Y/%m/%d")
         result = create_dataframe(data)
         pd.testing.assert_frame_equal(expected_df, result)
+
+    def test_create_dataframe_raises_key_error(self):
+        data = []
+        with pytest.raises(KeyError):
+            create_dataframe(data)

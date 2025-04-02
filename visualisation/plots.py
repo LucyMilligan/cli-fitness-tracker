@@ -22,6 +22,7 @@ def plot_pace_vs_date(user_id: int, start_date: str = "1981/01/01", end_date: st
     plt.show()
 
 
+
 def plot_pace_vs_elevation(user_id: int, start_date: str = "1981/01/01", end_date: str = "2081/01/01"):
     """creates a scatter plot of pace vs elevation for activity data"""
     activities = select_activity_data(user_id, start_date, end_date)
