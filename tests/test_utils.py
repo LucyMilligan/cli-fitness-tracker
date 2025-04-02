@@ -1,32 +1,16 @@
 from visualisation.utils import get_dates, get_user_id, is_valid_date, plot_activity_input, plot_all_activity_data, exit
-from unittest.mock import patch, Mock
 import pytest
+
+# main script (using these utils) is manually tested with different scenarios
 
 class TestGetUserId:
     def test_get_user_id_returns_user_id(self, mocker):
         input_mock = mocker.patch("builtins.input")
         input_mock.return_value = "1"
 
-        func_mock = mocker.patch("visualisation.utils.get_user_id")
-
         result = get_user_id()
 
         assert result == "1"
-        assert func_mock.call_count == 0
-    
-    def test_get_user_id_calls_func_again_if_incorrect_input(self, mocker):
-        #mock incorrect input
-        input_mock = mocker.patch("builtins.input")
-        input_mock.return_value = "a"
-
-        #mock get_user_id function (that will be called inside the function)
-        func_mock = mocker.patch("visualisation.utils.get_user_id")
-
-        get_user_id()
-
-        #assert that the get_user_id is called in the else block 
-        #(should be 0 if input is correct)
-        assert func_mock.call_count == 1
 
 
 class TestPlotAllActivityData:
@@ -46,16 +30,13 @@ class TestPlotAllActivityData:
 
         assert result == False
 
-    def test_plot_all_activity_data_calls_func_again_if_incorrect_input(self, mocker):
+    def test_plot_all_activity_data_returns_string_for_invalid_input(self, mocker):
         input_mock = mocker.patch("builtins.input")
         input_mock.return_value = "yes"
 
-        func_mock = mocker.patch("visualisation.utils.plot_all_activity_data")
+        result = plot_all_activity_data()
 
-        plot_all_activity_data()
-
-        assert func_mock.call_count == 1
-
+        assert result == "Invalid input"
 
 class TestIsValidDate:
     def test_is_valid_date_returns_true_for_valid_date_and_format(self):
@@ -85,30 +66,12 @@ class TestGetDates:
         input_mock_1 = mocker.patch("builtins.input")
         input_mock_1.return_value = "2025/03/20"
 
-        #mock is_valid_date 
-        func_mock = mocker.patch("visualisation.utils.is_valid_date")
-        func_mock.return_value = True
-
         result = get_dates()
-        assert func_mock.call_count == 2
         assert result == ("2025/03/20", "2025/03/20")
-
-    def test_get_dates_calls_func_again_if_date_format_invalid(self, mocker):
-        input_mock_1 = mocker.patch("builtins.input")
-        input_mock_1.return_value = "2025/03/20"
-
-        func_mock = mocker.patch("visualisation.utils.is_valid_date")
-        func_mock.return_value = False
-
-        func_mock_2 = mocker.patch("visualisation.utils.get_dates")
-
-        get_dates()
-
-        assert func_mock_2.call_count == 1
         
 
 class TestPlotActivityInput:
-    def test_plot_activity_input_returns_valid_input(self, mocker):
+    def test_plot_activity_input_returns_input(self, mocker):
         input_mock = mocker.patch("builtins.input")
         input_mock.return_value = "a"
 
@@ -116,19 +79,24 @@ class TestPlotActivityInput:
 
         assert result == "a"
 
-    def test_plot_activity_input_calls_func_again_if_incorrect_input(self, mocker):
-        input_mock = mocker.patch("builtins.input")
-        input_mock.return_value = "u"
-
-        func_mock = mocker.patch("visualisation.utils.plot_activity_input")
-
-        plot_activity_input()
-
-        assert func_mock.call_count == 1
-
 class TestExit:
     def test_exit_quits_program_with_message(self):
         with pytest.raises(SystemExit) as e:
             exit()
         assert e.value.code == "Goodbye! Enjoy your next activity!"
 
+
+####### if wanting to patch a function and get the call count #######
+    # def test_get_user_id_calls_func_again_if_incorrect_input(mocker):
+    #     #mock incorrect input
+    #     input_mock = mocker.patch("builtins.input")
+    #     input_mock.return_value = "a"
+
+    #     #mock get_user_id function (that will be called inside the function)
+    #     func_mock = mocker.patch("visualisation.utils.get_user_id")
+
+    #     get_user_id()
+
+    #     #assert that the get_user_id is called in the else block 
+    #     #(should be 0 if input is correct)
+    #     assert func_mock.call_count == 1

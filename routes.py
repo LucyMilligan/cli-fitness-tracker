@@ -15,7 +15,12 @@ def on_startup():
 #note: can use the same sqlmodel as a pydantic model
 @app.post("/users/", response_model=User)
 def create_user(user: UserCreate, session: SessionDep):
-    """Endpoint that allows a user to create a user"""
+    """Endpoint that allows a user to create a user. The user request body
+    should be in the format:
+
+        name: str (e.g. "bob")
+        email: str (e.g. "bob@gmail.com")
+    """
     db_user = User.model_validate(user)
     session.add(db_user)
     session.commit()
@@ -25,7 +30,19 @@ def create_user(user: UserCreate, session: SessionDep):
 
 @app.post("/activities/", response_model=Activity)
 def create_activity(activity: ActivityCreate, session: SessionDep):
-    """Endpoint that allows a user to create an activity"""
+    """Endpoint that allows a user to create an activity. The activity request body
+    should be in the format:
+    
+        user_id: int (e.g. 1)
+        date: str, in the format "YYYY/MM/DD" (e.g. "2025/02/24")
+        time: str, in the format "hh:mm" (e.g. "17:45")
+        activity: str (e.g. "run")
+        activity_type: str (e.g. "trail")
+        moving_time: str, in the format "hh:mm:ss" (e.g. 00:32:05)
+        distance_km: float (e.g. 5.65)
+        perceived_effort: int, between 1 (very easy) and 10 (very hard)
+        elevation_m: int, optional (e.g. 10)
+    """
     db_activity = Activity.model_validate(activity)
     session.add(db_activity)
     session.commit()
