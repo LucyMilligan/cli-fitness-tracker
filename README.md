@@ -1,7 +1,7 @@
 # cli-fitness-tracker
 A simple API and command line interface application to visualise activity data (currently only set up for road/trail running). Users can enter, retrieve, modify and delete user and activity data via an API, with data stored in a postgres database. Users can also create simple plots of the data via a command line interface application to give them some insights into how their training is going.
 
-The aim of this mini project was to practice interacting with a database and creating graphical visualisations in python (using SQLAlchemy, Pandas, Matplotlib and Numpy). Testing of the API has therefore not been undertaken here, but can be found in my basic-postgres-fastapi repository.
+The aim of this mini project was to practice interacting with a database and creating graphical visualisations in python (using SQLAlchemy, Pandas, Matplotlib and Numpy).
 
 ## Prerequisites
 
@@ -60,5 +60,4 @@ To run the unit tests:
 Improvements to the application could be:
 - add additional graphs
 - give users options to add trendlines to graphs
-- enforce data entry in certain formats (e.g. date, time, perceived effort)
 - accept and process other activities such as cycling
