@@ -5,7 +5,7 @@ from visualisation.plots import (
     plot_pace_vs_elevation,
     plot_pace_vs_perceived_effort,
 )
-from visualisation.utils import (
+from input_handler.input_handler import (
     get_dates,
     get_user_id,
     is_valid_date,

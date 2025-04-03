@@ -1,4 +1,6 @@
-from visualisation.utils import (
+import pytest
+
+from input_handler.input_handler import (
     get_dates,
     get_user_id,
     is_valid_date,
@@ -6,9 +8,8 @@ from visualisation.utils import (
     plot_all_activity_data,
     exit,
 )
-import pytest
 
-# main script (using these utils) is manually tested with different scenarios
+# main script is manually tested with different scenarios
 
 
 class TestGetUserId:
