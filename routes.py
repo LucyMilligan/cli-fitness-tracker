@@ -39,7 +39,8 @@ def create_user(user: UserCreate, session: SessionDep):
 
 @app.post("/activities/", response_model=Activity)
 def create_activity(activity: ActivityCreate, session: SessionDep):
-    """Endpoint that allows a user to create an activity. The activity request body
+    """Endpoint that allows a user to create an activity, with the request body
+    validated against the Activity model. The activity request body
     should be in the format:
 
         user_id: int (e.g. 1)
@@ -51,12 +52,22 @@ def create_activity(activity: ActivityCreate, session: SessionDep):
         distance_km: float (e.g. 5.65)
         perceived_effort: int, between 1 (very easy) and 10 (very hard)
         elevation_m: int, optional (e.g. 10)
+
+    If any of the fields are in the incorrect format, an exception with 422
+    status code is raised.
     """
-    db_activity = Activity.model_validate(activity)
-    session.add(db_activity)
-    session.commit()
-    session.refresh(db_activity)
-    return db_activity
+    try:
+        db_activity = Activity.model_validate(activity)
+        session.add(db_activity)
+        session.commit()
+        session.refresh(db_activity)
+        return db_activity
+    except ValueError as e:
+        error_messages = [f"{err['loc'][0]} - {err['msg']}" for err in e.errors()]
+        raise HTTPException(
+            status_code=422,
+            detail=f"Format of data incorrect: {", ".join(error_messages)}"
+        )
 
 
 @app.get("/users/", response_model=list[UserPublic])
@@ -122,11 +133,16 @@ def update_activity(id: int, activity: ActivityUpdate, session: SessionDep):
     original values remain.
 
     If the ID does not exist, an exception with 404 status code is raised.
+    
+    If any of the fields are in the incorrect format, an exception with
+    422 status code is raised.
     """
     activity_db = session.get(Activity, id)
     if not activity_db:
         raise HTTPException(status_code=404, detail="Activity not found")
     activity_data = activity.model_dump(exclude_unset=True)
+    # don't need to validate against Activity because model_dump is validating against 
+    # ActivityUpdate (optional fields required which Activity doesn't have)
     activity_db.sqlmodel_update(activity_data)
     session.add(activity_db)
     session.commit()
