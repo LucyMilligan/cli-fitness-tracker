@@ -142,6 +142,39 @@ class TestDeleteUser:
 
 
 class TestCreateActivity:
+    def test_endpoint_returns_200_status_code_on_success(self, client: TestClient):
+        activity_test = {
+            "user_id": 1,
+            "date": "2025/10/10",
+            "time": "17:30",
+            "activity": "run",
+            "activity_type": "trail",
+            "moving_time": "00:00:30",
+            "distance_km": 5.25,
+            "perceived_effort": 5,
+            "elevation_m": 5
+        }
+        response = client.post("/activities/", json=activity_test)
+        assert response.status_code == 200
+    
+    def test_endpoint_returns_added_activity(self, client: TestClient):
+        activity_test = {
+            "user_id": 1,
+            "date": "2025/10/10",
+            "time": "17:30",
+            "activity": "run",
+            "activity_type": "trail",
+            "moving_time": "00:00:30",
+            "distance_km": 5.25,
+            "perceived_effort": 5,
+            "elevation_m": 5
+        }
+        response = client.post("/activities/", json=activity_test)
+        new_activity = response.json()
+        activity_test["id"] = 1
+        assert new_activity == activity_test
+
+
     def test_create_activity_raises_422_for_incorrect_date_field(self, session: Session, client: TestClient):
         activity_test = {
             "user_id": 1,
@@ -158,6 +191,7 @@ class TestCreateActivity:
         data = response.json()
         assert response.status_code == 422
         assert "Format of data incorrect:" and "date" in data["detail"]
+
 
     def test_create_activity_raises_422_for_multiple_incorrect_fields(self, session: Session, client: TestClient):
         activity_test = {
@@ -183,6 +217,26 @@ class TestCreateActivity:
 
 
 class TestUpdateActivity:
+    def test_endpoint_returns_200_status_code_on_success(self, client: TestClient, session: Session):
+        activity_test = Activity(
+            user_id= 1,
+            date="2025/03/04",
+            time="17:30",
+            activity="run",
+            activity_type="trail",
+            moving_time="00:00:30",
+            distance_km=5,
+            perceived_effort=5,
+            elevation_m=5
+        )
+        session.add(activity_test)
+        session.commit()
+        
+        activity_patch_test = {"time": "17:45", "moving_time": "00:30:00"}
+        response = client.patch("/activities/1", json=activity_patch_test)
+        assert response.status_code == 200
+
+    
     def test_update_activity_raises_422_for_incorrect_fields(self, session: Session, client: TestClient):
         activity_test = Activity(
             user_id= 1,
@@ -197,11 +251,11 @@ class TestUpdateActivity:
         )
 
         activity_update = {
-            "date": 2025,
-            "time": "5pm",
-            "moving_time": 15,
-            "activity": "running",
-            "perceived_effort": 100
+            "date": 2025, #incorrect format
+            "time": "5pm", #incorrect format
+            "moving_time": 15, #incorrect format
+            "activity": "running", #incorrect format
+            "perceived_effort": 100 #incorrect format
         }
 
         session.add(activity_test)

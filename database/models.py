@@ -49,6 +49,7 @@ class Activity(SQLModel, table=True):
     def date_valid(cls, value: str):
         try:
             datetime.strptime(value, "%Y/%m/%d")
+            return value
         except (ValueError, TypeError):
             raise ValueError("Date does not match format 'YYYY/MM/DD'")
 
@@ -57,6 +58,7 @@ class Activity(SQLModel, table=True):
     def time_valid(cls, value: str):
         try:
             datetime.strptime(value, "%H:%M")
+            return value
         except (ValueError, TypeError):
             raise ValueError("Time does not match format 'HH:MM'")
 
@@ -65,6 +67,7 @@ class Activity(SQLModel, table=True):
     def moving_time_valid(cls, value: str):
         try:
             hours,  minutes, seconds = map(int, value.split(":"))
+            return value
         except (ValueError, AttributeError):
             raise ValueError("Time does not match format 'HH:MM:SS'")
 
@@ -74,6 +77,7 @@ class Activity(SQLModel, table=True):
         valid_activities = ["run", "ride"]
         if value not in valid_activities:
             raise ValueError(f"Activity not in {valid_activities}")
+        return value
         
     @field_validator('perceived_effort', mode='before')
     @classmethod
@@ -81,6 +85,7 @@ class Activity(SQLModel, table=True):
         try:
             if value < 1 or value > 10:
                 raise ValueError("Perceived_effort not in range 1 - 10")
+            return value
         except TypeError:
             raise ValueError("Perceived_effort not a valid number in the range 1 - 10")
 
@@ -114,6 +119,7 @@ class ActivityUpdate(SQLModel): #optional updates to a specific activity id
     def date_valid(cls, value: str):
         try:
             datetime.strptime(value, "%Y/%m/%d")
+            return value
         except (ValueError, TypeError):
             raise ValueError("Date does not match format 'YYYY/MM/DD'")
 
@@ -122,6 +128,7 @@ class ActivityUpdate(SQLModel): #optional updates to a specific activity id
     def time_valid(cls, value: str):
         try:
             datetime.strptime(value, "%H:%M")
+            return value
         except (ValueError, TypeError):
             raise ValueError("Time does not match format 'HH:MM'")
 
@@ -130,6 +137,7 @@ class ActivityUpdate(SQLModel): #optional updates to a specific activity id
     def moving_time_valid(cls, value: str):
         try:
             hours,  minutes, seconds = map(int, value.split(":"))
+            return value
         except (ValueError, AttributeError):
             raise ValueError("Time does not match format 'HH:MM:SS'")
 
@@ -139,6 +147,7 @@ class ActivityUpdate(SQLModel): #optional updates to a specific activity id
         valid_activities = ["run", "ride"]
         if value not in valid_activities:
             raise ValueError(f"Activity not in {valid_activities}")
+        return value
         
     @field_validator('perceived_effort', mode='before')
     @classmethod
@@ -146,5 +155,6 @@ class ActivityUpdate(SQLModel): #optional updates to a specific activity id
         try:
             if value < 1 or value > 10:
                 raise ValueError("Perceived_effort not in range 1 - 10")
+            return value
         except TypeError:
             raise ValueError("Perceived_effort not a valid number in the range 1 - 10")
