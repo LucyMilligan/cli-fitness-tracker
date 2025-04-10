@@ -1,5 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from sqlmodel import select
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 
 from database.models import (
     Activity,
@@ -19,6 +22,18 @@ app = FastAPI()
 def on_startup():
     """Create tables on startup"""
     create_db_and_tables()
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_error_handler(request: Request, exc: IntegrityError):
+    """Error handler to catch database errors, such as a foreign key violation
+    (e.g. an activity is added with a user_id that doesn't exist in the user_table)"""
+    return JSONResponse(
+        status_code=400,
+        content={
+            "detail": "Something went wrong on the server/database. Check your user_id is valid and exists."
+        },
+    )
 
 
 # note: can use the same sqlmodel as a pydantic model
@@ -66,7 +81,7 @@ def create_activity(activity: ActivityCreate, session: SessionDep):
         error_messages = [f"{err['loc'][0]} - {err['msg']}" for err in e.errors()]
         raise HTTPException(
             status_code=422,
-            detail=f"Format of data incorrect: {", ".join(error_messages)}"
+            detail=f"Format of data incorrect: {", ".join(error_messages)}",
         )
 
 
@@ -133,7 +148,7 @@ def update_activity(id: int, activity: ActivityUpdate, session: SessionDep):
     original values remain.
 
     If the ID does not exist, an exception with 404 status code is raised.
-    
+
     If any of the fields are in the incorrect format, an exception with
     422 status code is raised.
     """
@@ -141,7 +156,7 @@ def update_activity(id: int, activity: ActivityUpdate, session: SessionDep):
     if not activity_db:
         raise HTTPException(status_code=404, detail="Activity not found")
     activity_data = activity.model_dump(exclude_unset=True)
-    # don't need to validate against Activity because model_dump is validating against 
+    # don't need to validate against Activity because model_dump is validating against
     # ActivityUpdate (optional fields required which Activity doesn't have)
     activity_db.sqlmodel_update(activity_data)
     session.add(activity_db)
